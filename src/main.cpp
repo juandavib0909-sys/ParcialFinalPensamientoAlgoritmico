@@ -2,5 +2,5 @@
 
 int main() {
   ejecutarjuego();
-return 0;
+  return 0;
 }
