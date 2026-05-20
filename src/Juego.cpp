@@ -14,17 +14,17 @@ char mapaTurnoEnemigos[MAPA_FILAS][MAPA_COLUMNAS];
 
 void mostrarTitulo()
 {
-    std::cout << "          Flipante mazmorra de juan y juan C++         " << std::endl;
+    std::cout << "          FLIPANTES MAZMORRAS DE JUAN Y JUAN C++         " << std::endl
 }
 
 void mostrarControles()
 {
     std::cout << std::endl;
     std::cout << "Controles:" << std::endl;
-    std::cout << "W: arriba" << std::endl;
-    std::cout << "S: abajo" << std::endl;
-    std::cout << "A: izquierda" << std::endl;
-    std::cout << "D: derecha" << std::endl;
+    std::cout << "W: moverse arriba" << std::endl;
+    std::cout << "S: moverse abajo" << std::endl;
+    std::cout << "A: moverse izquierda" << std::endl;
+    std::cout << "D: moverse derecha" << std::endl;
     std::cout << "E: recoger objeto" << std::endl;
     std::cout << "Q: soltar objeto" << std::endl;
     std::cout << "X: salir" << std::endl;
@@ -168,7 +168,7 @@ void iniciarDatosJuego(
         tiposEnemigos,
         enemigosActivos,
         2,
-        "Araña",
+        "Arana",
         'A',
         ENEMIGO_LENTO,
         9,
@@ -348,9 +348,12 @@ void jugarTurno(
 
     for (i = 0; i < cantidadObjetos && i < MAX_OBJETOS; i = i + 1)
     {
-        if (objetosActivos[i] == 1 && habitacionesObjetos[i] == *habitacionActual)
+        if (objetosActivos[i] == 1)
         {
-            objetosVisibles[i] = 1;
+            if (habitacionesObjetos[i] == *habitacionActual)
+            {
+                objetosVisibles[i] = 1;
+            }
         }
     }
 
@@ -361,9 +364,12 @@ void jugarTurno(
 
     for (i = 0; i < cantidadEnemigos && i < MAX_ENEMIGOS; i = i + 1)
     {
-        if (enemigosActivos[i] == 1 && habitacionesEnemigos[i] == *habitacionActual)
+        if (enemigosActivos[i] == 1)
         {
-            enemigosVisibles[i] = 1;
+            if (habitacionesEnemigos[i] == *habitacionActual)
+            {
+                enemigosVisibles[i] = 1;
+            }
         }
     }
 
@@ -577,11 +583,6 @@ void procesarTecla(
                                 columnasObjetos,
                                 objetosActivos
                             );
-
-                            if (*inventarioJugador == INVENTARIO_VACIO)
-                            {
-                                habitacionTurnoJuego = *habitacionActual;
-                            }
                         }
                         else
                         {
@@ -692,7 +693,12 @@ void revisarRecogerObjeto(
         {
             if (habitacionesObjetos[i] == habitacionTurnoJuego)
             {
-                if (mismaPosicion(filaJugador, columnaJugador, filasObjetos[i], columnasObjetos[i]) == 1)
+                if (mismaPosicion(
+                    filaJugador,
+                    columnaJugador,
+                    filasObjetos[i],
+                    columnasObjetos[i]
+                ) == 1)
                 {
                     recogerObjeto(
                         inventarioJugador,
@@ -842,7 +848,12 @@ void revisarChoqueConEnemigos(
         {
             if (habitacionesEnemigos[i] == habitacionTurnoJuego)
             {
-                if (enemigoTocaJugador(filasEnemigos[i], columnasEnemigos[i], filaJugador, columnaJugador) == 1)
+                if (enemigoTocaJugador(
+                    filasEnemigos[i],
+                    columnasEnemigos[i],
+                    filaJugador,
+                    columnaJugador
+                ) == 1)
                 {
                     quitarVidaJugador(vidasJugador);
 
@@ -922,7 +933,7 @@ void mostrarMensajeFinal(
     if (estadoJuego == ESTADO_VICTORIA)
     {
         std::cout << "Ganaste." << std::endl;
-        std::cout << "Lograste llegar a la ultima habitacion con el tesoro." << std::endl;
+        std::cout << "Llegaste a la ultima habitacion con el tesoro." << std::endl;
     }
     else
     {
