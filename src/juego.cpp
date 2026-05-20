@@ -1,4 +1,6 @@
 #include "../include/juego.h"
+#include "../include/menu.h"
+#include "../include/colores.h"
 #include <iostream>
 #include <string>
 #include <cstdlib>
@@ -236,6 +238,14 @@ void iniciarDatosJuego(
 
 void ejecutarJuego()
 {
+    if (ejecutarMenuInicial() == MENU_SALIR)
+    {
+        return;
+    }
+
+    pantallaPreparada = 0;
+    contadorEnemigos = 0;
+
     char mapaBase[MAPA_FILAS][MAPA_COLUMNAS];
 
     std::string nombreJugador;
@@ -1064,36 +1074,66 @@ void mostrarMensajeFinal(
     int estadoJuego
 )
 {
+    prepararColores();
+
+    std::cout << colorPared();
     std::cout << "##############################" << std::endl;
     std::cout << "#                            #" << std::endl;
+    std::cout << colorTextoNormal();
 
     if (estadoJuego == ESTADO_VICTORIA)
     {
-        std::cout << "#          GANASTE           #" << std::endl;
+        std::cout << colorPared() << "#";
+        std::cout << colorObjeto() << "          GANASTE           ";
+        std::cout << colorPared() << "#" << colorTextoNormal() << std::endl;
+
+        std::cout << colorPared();
         std::cout << "#                            #" << std::endl;
-        std::cout << "#   Llegaste con el tesoro   #" << std::endl;
+        std::cout << colorTextoNormal();
+
+        std::cout << colorPared() << "#";
+        std::cout << colorPuerta() << "   Llegaste con el tesoro   ";
+        std::cout << colorPared() << "#" << colorTextoNormal() << std::endl;
     }
     else
     {
         if (estadoJuego == ESTADO_DERROTA)
         {
-            std::cout << "#          PERDISTE          #" << std::endl;
+            std::cout << colorPared() << "#";
+            std::cout << colorEnemigo() << "          PERDISTE          ";
+            std::cout << colorPared() << "#" << colorTextoNormal() << std::endl;
+
+            std::cout << colorPared();
             std::cout << "#                            #" << std::endl;
-            std::cout << "#   Te quedaste sin vidas    #" << std::endl;
+            std::cout << colorTextoNormal();
+
+            std::cout << colorPared() << "#";
+            std::cout << colorJugador() << "   Te quedaste sin vidas    ";
+            std::cout << colorPared() << "#" << colorTextoNormal() << std::endl;
         }
         else
         {
             if (estadoJuego == ESTADO_SALIR)
             {
-                std::cout << "#       SALISTE DEL JUEGO    #" << std::endl;
+                std::cout << colorPared() << "#";
+                std::cout << colorPuerta() << "       SALISTE DEL JUEGO    ";
+                std::cout << colorPared() << "#" << colorTextoNormal() << std::endl;
+
+                std::cout << colorPared();
                 std::cout << "#                            #" << std::endl;
-                std::cout << "#   Cerraste la partida      #" << std::endl;
+                std::cout << colorTextoNormal();
+
+                std::cout << colorPared() << "#";
+                std::cout << colorJugador() << "   Cerraste la partida      ";
+                std::cout << colorPared() << "#" << colorTextoNormal() << std::endl;
             }
         }
     }
 
+    std::cout << colorPared();
     std::cout << "#                            #" << std::endl;
     std::cout << "##############################" << std::endl;
+    std::cout << colorTextoNormal();
 }
 
 /*
