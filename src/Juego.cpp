@@ -1,10 +1,17 @@
 #include "../include/juego.h"
 #include <iostream>
 #include <string>
-#include <conio.h>
-#include <windows.h>
 #include <cstdlib>
+#include <cstdio>
 
+#ifdef _WIN32
+    #include <conio.h>
+    #include <windows.h>
+#else
+    #include <termios.h>
+    #include <unistd.h>
+    #include <fcntl.h>
+#endif
 int habitacionesObjetos[MAX_OBJETOS];
 int habitacionesEnemigos[MAX_ENEMIGOS];
 
@@ -12,6 +19,7 @@ int habitacionTurnoJuego = 0;
 char mapaTurnoEnemigos[MAPA_FILAS][MAPA_COLUMNAS];
 
 int contadorEnemigos = 0;
+int pantallaPreparada = 0;
 
 /*
     FUNCIONES PEQUENAS PARA QUE EL JUEGO SE SIENTA MAS FLUIDO
@@ -19,7 +27,11 @@ int contadorEnemigos = 0;
 
 void esperarUnMomento()
 {
+#ifdef _WIN32
     Sleep(90);
+#else
+    usleep(90000);
+#endif
 }
 
 int debeMoverEnemigos()
@@ -498,6 +510,7 @@ void jugarTurno(
 
 char leerTecla()
 {
+#ifdef _WIN32
     char tecla;
 
     if (_kbhit() == 0)
@@ -505,9 +518,50 @@ char leerTecla()
         return '\0';
     }
 
-    tecla = _getch();
+    tecla = (char)_getch();
 
     return tecla;
+#else
+    struct termios configuracionAnterior;
+    struct termios configuracionNueva;
+    int banderasAnteriores;
+    int caracter;
+
+    if (tcgetattr(STDIN_FILENO, &configuracionAnterior) == -1)
+    {
+        return '\0';
+    }
+
+    configuracionNueva = configuracionAnterior;
+    configuracionNueva.c_lflag = configuracionNueva.c_lflag & ~(ICANON | ECHO);
+
+    if (tcsetattr(STDIN_FILENO, TCSANOW, &configuracionNueva) == -1)
+    {
+        return '\0';
+    }
+
+    banderasAnteriores = fcntl(STDIN_FILENO, F_GETFL, 0);
+
+    if (banderasAnteriores == -1)
+    {
+        tcsetattr(STDIN_FILENO, TCSANOW, &configuracionAnterior);
+        return '\0';
+    }
+
+    fcntl(STDIN_FILENO, F_SETFL, banderasAnteriores | O_NONBLOCK);
+
+    caracter = std::getchar();
+
+    tcsetattr(STDIN_FILENO, TCSANOW, &configuracionAnterior);
+    fcntl(STDIN_FILENO, F_SETFL, banderasAnteriores);
+
+    if (caracter == EOF)
+    {
+        return '\0';
+    }
+
+    return (char)caracter;
+#endif
 }
 
 void procesarTecla(
@@ -1019,7 +1073,20 @@ void mostrarEstadoJugador(
 
 void limpiarPantalla()
 {
-    std::system("cls");
+    if (pantallaPreparada == 0)
+    {
+#ifdef _WIN32
+        std::system("cls");
+#else
+        std::system("clear");
+#endif
+
+        pantallaPreparada = 1;
+    }
+    else
+    {
+        std::cout << "\033[H";
+    }
 }
 
 void pausarJuego()
