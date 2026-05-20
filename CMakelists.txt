@@ -11,6 +11,8 @@ add_executable(juego
     src/entidades.cpp
     src/mapa.cpp
     src/juego.cpp
+    src/menu.cpp
+    src/colores.cpp
 )
 
 target_include_directories(juego PRIVATE
