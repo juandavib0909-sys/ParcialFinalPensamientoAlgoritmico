@@ -319,6 +319,7 @@ void ejecutarJuego()
         esperarUnMomento();
     }
 
+    pantallaPreparada = 0;
     limpiarPantalla();
     mostrarTitulo();
     mostrarMensajeFinal(estadoJuego);
@@ -463,14 +464,19 @@ void jugarTurno(
     if (*estadoJuego == ESTADO_JUGANDO)
     {
         revisarChoqueConEnemigos(
-            *filaJugador,
-            *columnaJugador,
+            filaJugador,
+            columnaJugador,
+            habitacionActual,
             vidasJugador,
+            inventarioJugador,
+            filasObjetos,
+            columnasObjetos,
+            objetosActivos,
             filasEnemigos,
             columnasEnemigos,
             enemigosActivos,
             cantidadEnemigos
-        );
+);
 
         if (debeMoverEnemigos() == 1)
         {
@@ -486,14 +492,19 @@ void jugarTurno(
         }
 
         revisarChoqueConEnemigos(
-            *filaJugador,
-            *columnaJugador,
+            filaJugador,
+            columnaJugador,
+            habitacionActual,
             vidasJugador,
+            inventarioJugador,
+            filasObjetos,
+            columnasObjetos,
+            objetosActivos,
             filasEnemigos,
             columnasEnemigos,
             enemigosActivos,
             cantidadEnemigos
-        );
+);
 
         actualizarEstadoJuego(
             estadoJuego,
@@ -897,9 +908,14 @@ void actualizarEnemigos(
 }
 
 void revisarChoqueConEnemigos(
-    int filaJugador,
-    int columnaJugador,
+    int* filaJugador,
+    int* columnaJugador,
+    int* habitacionActual,
     int* vidasJugador,
+    int* inventarioJugador,
+    int filasObjetos[],
+    int columnasObjetos[],
+    int objetosActivos[],
     int filasEnemigos[],
     int columnasEnemigos[],
     int enemigosActivos[],
@@ -908,8 +924,18 @@ void revisarChoqueConEnemigos(
 {
     int i;
     int limite;
+    int indiceObjeto;
+    int filaGolpe;
+    int columnaGolpe;
+    int habitacionGolpe;
 
-    if (vidasJugador == 0)
+    if (
+        filaJugador == 0 ||
+        columnaJugador == 0 ||
+        habitacionActual == 0 ||
+        vidasJugador == 0 ||
+        inventarioJugador == 0
+    )
     {
         return;
     }
@@ -935,14 +961,38 @@ void revisarChoqueConEnemigos(
                 if (enemigoTocaJugador(
                     filasEnemigos[i],
                     columnasEnemigos[i],
-                    filaJugador,
-                    columnaJugador
+                    *filaJugador,
+                    *columnaJugador
                 ) == 1)
                 {
+                    filaGolpe = *filaJugador;
+                    columnaGolpe = *columnaJugador;
+                    habitacionGolpe = *habitacionActual;
+
+                    if (*inventarioJugador != INVENTARIO_VACIO)
+                    {
+                        indiceObjeto = *inventarioJugador;
+
+                        if (indiceObjeto >= 0 && indiceObjeto < MAX_OBJETOS)
+                        {
+                            filasObjetos[indiceObjeto] = filaGolpe;
+                            columnasObjetos[indiceObjeto] = columnaGolpe;
+                            objetosActivos[indiceObjeto] = 1;
+                            habitacionesObjetos[indiceObjeto] = habitacionGolpe;
+                        }
+
+                        *inventarioJugador = INVENTARIO_VACIO;
+                    }
+
                     quitarVidaJugador(vidasJugador);
 
-                    filasEnemigos[i] = 2;
-                    columnasEnemigos[i] = 2;
+                    if (*vidasJugador > 0)
+                    {
+                        *habitacionActual = 0;
+                        *filaJugador = 5;
+                        *columnaJugador = 5;
+                        habitacionTurnoJuego = 0;
+                    }
 
                     return;
                 }
@@ -1014,26 +1064,36 @@ void mostrarMensajeFinal(
     int estadoJuego
 )
 {
+    std::cout << "##############################" << std::endl;
+    std::cout << "#                            #" << std::endl;
+
     if (estadoJuego == ESTADO_VICTORIA)
     {
-        std::cout << "Ganaste." << std::endl;
-        std::cout << "Llegaste a la ultima habitacion con el tesoro." << std::endl;
+        std::cout << "#          GANASTE           #" << std::endl;
+        std::cout << "#                            #" << std::endl;
+        std::cout << "#   Llegaste con el tesoro   #" << std::endl;
     }
     else
     {
         if (estadoJuego == ESTADO_DERROTA)
         {
-            std::cout << "Perdiste." << std::endl;
-            std::cout << "Los enemigos te quitaron todas las vidas." << std::endl;
+            std::cout << "#          PERDISTE          #" << std::endl;
+            std::cout << "#                            #" << std::endl;
+            std::cout << "#   Te quedaste sin vidas    #" << std::endl;
         }
         else
         {
             if (estadoJuego == ESTADO_SALIR)
             {
-                std::cout << "Saliste del juego." << std::endl;
+                std::cout << "#       SALISTE DEL JUEGO    #" << std::endl;
+                std::cout << "#                            #" << std::endl;
+                std::cout << "#   Cerraste la partida      #" << std::endl;
             }
         }
     }
+
+    std::cout << "#                            #" << std::endl;
+    std::cout << "##############################" << std::endl;
 }
 
 /*
