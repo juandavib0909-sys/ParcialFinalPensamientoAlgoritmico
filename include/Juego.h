@@ -150,9 +150,14 @@ void actualizarEnemigos(
 );
 
 void revisarChoqueConEnemigos(
-    int filaJugador,
-    int columnaJugador,
+    int* filaJugador,
+    int* columnaJugador,
+    int* habitacionActual,
     int* vidasJugador,
+    int* inventarioJugador,
+    int filasObjetos[],
+    int columnasObjetos[],
+    int objetosActivos[],
     int filasEnemigos[],
     int columnasEnemigos[],
     int enemigosActivos[],
