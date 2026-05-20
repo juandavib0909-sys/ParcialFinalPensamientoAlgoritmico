@@ -1,6 +1,9 @@
-#include "../include/juegos.h"
+#include "../include/juego.h"
 #include <iostream>
 #include <string>
+#include <conio.h>
+#include <windows.h>
+#include <cstdlib>
 
 int habitacionesObjetos[MAX_OBJETOS];
 int habitacionesEnemigos[MAX_ENEMIGOS];
@@ -8,27 +11,42 @@ int habitacionesEnemigos[MAX_ENEMIGOS];
 int habitacionTurnoJuego = 0;
 char mapaTurnoEnemigos[MAPA_FILAS][MAPA_COLUMNAS];
 
+int contadorEnemigos = 0;
+
+/*
+    FUNCIONES PEQUENAS PARA QUE EL JUEGO SE SIENTA MAS FLUIDO
+*/
+
+void esperarUnMomento()
+{
+    Sleep(90);
+}
+
+int debeMoverEnemigos()
+{
+    contadorEnemigos = contadorEnemigos + 1;
+
+    if (contadorEnemigos >= 4)
+    {
+        contadorEnemigos = 0;
+        return 1;
+    }
+
+    return 0;
+}
+
 /*
     INICIO DEL JUEGO
 */
 
 void mostrarTitulo()
 {
-    std::cout << "          FLIPANTES MAZMORRAS DE JUAN Y JUAN C++         " << std::endl
+    std::cout << "          FLIPANTES MAZMORRAS DE JUAN Y JUAN C++         " << std::endl;
 }
 
 void mostrarControles()
 {
-    std::cout << std::endl;
-    std::cout << "Controles:" << std::endl;
-    std::cout << "W: moverse arriba" << std::endl;
-    std::cout << "S: moverse abajo" << std::endl;
-    std::cout << "A: moverse izquierda" << std::endl;
-    std::cout << "D: moverse derecha" << std::endl;
-    std::cout << "E: recoger objeto" << std::endl;
-    std::cout << "Q: soltar objeto" << std::endl;
-    std::cout << "X: salir" << std::endl;
-    std::cout << std::endl;
+    std::cout << "WASD mover | E recoger | Q soltar | X salir" << std::endl;
 }
 
 void iniciarDatosJuego(
@@ -285,6 +303,8 @@ void ejecutarJuego()
             enemigosActivos,
             cantidadEnemigos
         );
+
+        esperarUnMomento();
     }
 
     limpiarPantalla();
@@ -406,19 +426,22 @@ void jugarTurno(
 
     tecla = leerTecla();
 
-    procesarTecla(
-        tecla,
-        mapaBase,
-        filaJugador,
-        columnaJugador,
-        inventarioJugador,
-        habitacionActual,
-        estadoJuego,
-        filasObjetos,
-        columnasObjetos,
-        objetosActivos,
-        cantidadObjetos
-    );
+    if (tecla != '\0')
+    {
+        procesarTecla(
+            tecla,
+            mapaBase,
+            filaJugador,
+            columnaJugador,
+            inventarioJugador,
+            habitacionActual,
+            estadoJuego,
+            filasObjetos,
+            columnasObjetos,
+            objetosActivos,
+            cantidadObjetos
+        );
+    }
 
     habitacionTurnoJuego = *habitacionActual;
 
@@ -437,15 +460,18 @@ void jugarTurno(
             cantidadEnemigos
         );
 
-        actualizarEnemigos(
-            *filaJugador,
-            *columnaJugador,
-            filasEnemigos,
-            columnasEnemigos,
-            tiposEnemigos,
-            enemigosActivos,
-            cantidadEnemigos
-        );
+        if (debeMoverEnemigos() == 1)
+        {
+            actualizarEnemigos(
+                *filaJugador,
+                *columnaJugador,
+                filasEnemigos,
+                columnasEnemigos,
+                tiposEnemigos,
+                enemigosActivos,
+                cantidadEnemigos
+            );
+        }
 
         revisarChoqueConEnemigos(
             *filaJugador,
@@ -474,8 +500,12 @@ char leerTecla()
 {
     char tecla;
 
-    std::cout << "Ingrese una opcion: ";
-    std::cin >> tecla;
+    if (_kbhit() == 0)
+    {
+        return '\0';
+    }
+
+    tecla = _getch();
 
     return tecla;
 }
@@ -989,12 +1019,7 @@ void mostrarEstadoJugador(
 
 void limpiarPantalla()
 {
-    int i;
-
-    for (i = 0; i < 35; i = i + 1)
-    {
-        std::cout << std::endl;
-    }
+    std::system("cls");
 }
 
 void pausarJuego()
