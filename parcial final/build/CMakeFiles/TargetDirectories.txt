@@ -1,0 +1,4 @@
+E:/parcial final/build/CMakeFiles/juego.dir
+E:/parcial final/build/CMakeFiles/run.dir
+E:/parcial final/build/CMakeFiles/edit_cache.dir
+E:/parcial final/build/CMakeFiles/rebuild_cache.dir

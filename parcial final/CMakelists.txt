@@ -1,0 +1,32 @@
+cmake_minimum_required(VERSION 3.10)
+
+project(FlipantesMazmorrasDeJuanYJuan LANGUAGES CXX)
+
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
+
+add_executable(juego
+    main.cpp
+    src/entidades.cpp
+    src/mapa.cpp
+    src/juego.cpp
+    src/menu.cpp
+    src/colores.cpp
+)
+
+target_include_directories(juego PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}/include
+)
+
+if(MSVC)
+    target_compile_options(juego PRIVATE /W4)
+else()
+    target_compile_options(juego PRIVATE -Wall -Wextra -pedantic)
+endif()
+
+add_custom_target(run
+    COMMAND juego
+    DEPENDS juego
+    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+)
